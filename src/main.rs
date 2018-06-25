@@ -36,22 +36,25 @@ struct TrackingCode {
 }
 
 pub static BASEURL: &str = "http://boxberry.ru/tracking.service/tracking.php?check_captcha=1&g_recaptcha_response=0";
+pub static LETTERS: &'static [&str] = &["A", "B", "C", "D"];
 
 fn main() {
     let n_workers = 24;
     let pool = ThreadPool::new(n_workers);
 
-    for x in 0..10000 {
-        pool.execute(move|| {
-            get_package(&format!("{}", x));
-        });
+    for y in LETTERS.iter() {
+        for x in 0..10000 {
+            pool.execute(move|| {
+                get_package(&format!("{}", x), y);
+            });
+        }
     }
     pool.join();
 }
 
-fn get_package(number: &str) {
+fn get_package(number: &str, letter: &str) {
     let client = reqwest::Client::new();
-    let mut request = client.get(&format!("{}&id={}{}", BASEURL, number, "A"));
+    let mut request = client.get(&format!("{}&id={}{}", BASEURL, number, letter));
     let mut resp = request.send().unwrap();
 
     assert!(resp.status().is_success());
