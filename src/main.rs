@@ -43,7 +43,7 @@ fn main() {
     let pool = ThreadPool::new(n_workers);
 
     for y in LETTERS.iter() {
-        for x in 0..10000 {
+        for x in 0..100000 {
             pool.execute(move|| {
                 get_package(&format!("{}", x), y);
             });
